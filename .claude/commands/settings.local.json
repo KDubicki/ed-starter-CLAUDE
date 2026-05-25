@@ -1,0 +1,19 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(npm run:*)"
+        ]
+    },
+    "hooks": {
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat spec.md"
+          }
+        ]
+      }
+    ]
+  }
+}
