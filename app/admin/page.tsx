@@ -4,12 +4,16 @@ import { useEffect, useState } from 'react';
 import { useFlightsStore } from '@/store/flightsStore';
 import { StatusControl } from '@/components/admin/StatusControl';
 import { FlightEditor } from '@/components/admin/FlightEditor';
-import type { Flight } from '@/types';
+import { BulkActionBar } from '@/components/admin/BulkActionBar';
+import type { Flight, FlightStatus } from '@/types';
 
 export default function AdminPage() {
-  const { flights, setFlights, removeFlight, resetFlights } = useFlightsStore();
+  const { flights, setFlights, removeFlight, removeFlights, updateFlights, resetFlights } =
+    useFlightsStore();
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   useEffect(() => {
     fetch('/api/flights')
@@ -19,6 +23,48 @@ export default function AdminPage() {
         setLoading(false);
       });
   }, [setFlights]);
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    setSelectedIds(
+      selectedIds.size === flights.length ? new Set() : new Set(flights.map((f) => f.id)),
+    );
+  }
+
+  async function handleBulkStatusChange(status: FlightStatus) {
+    const ids = Array.from(selectedIds);
+    setBulkLoading(true);
+    await fetch('/api/flights/bulk', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids, status }),
+    });
+    updateFlights(ids, { status });
+    setSelectedIds(new Set());
+    setBulkLoading(false);
+  }
+
+  async function handleBulkDelete() {
+    const ids = Array.from(selectedIds);
+    if (!confirm(`Delete ${ids.length} flight(s)?`)) return;
+    setBulkLoading(true);
+    await fetch('/api/flights/bulk', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    });
+    removeFlights(ids);
+    setSelectedIds(new Set());
+    setBulkLoading(false);
+  }
 
   async function handleRemove(id: string) {
     await fetch('/api/flights', {
@@ -34,6 +80,7 @@ export default function AdminPage() {
     const res = await fetch('/api/flights/reset', { method: 'POST' });
     const data: Flight[] = await res.json();
     resetFlights(data);
+    setSelectedIds(new Set());
   }
 
   if (loading) {
@@ -44,8 +91,11 @@ export default function AdminPage() {
     );
   }
 
+  const allSelected = selectedIds.size === flights.length && flights.length > 0;
+  const someSelected = selectedIds.size > 0;
+
   return (
-    <div className="min-h-screen bg-board-bg font-mono">
+    <div className={`min-h-screen bg-board-bg font-mono ${someSelected ? 'pb-16' : ''}`}>
       {/* Header */}
       <header className="bg-board-header border-b border-board-border px-6 py-4 flex items-center justify-between">
         <div>
@@ -84,18 +134,37 @@ export default function AdminPage() {
 
       {/* Flight list */}
       <div className="px-6 py-4">
-        <div className="text-xs text-board-muted uppercase tracking-widest mb-3">
-          {flights.length} flights total
+        <div className="flex items-center justify-between mb-3">
+          <label className="flex items-center gap-2 cursor-pointer text-xs text-board-muted uppercase tracking-widest">
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={toggleSelectAll}
+              className="accent-amber-500 cursor-pointer"
+            />
+            {flights.length} flights total
+          </label>
+          {someSelected && (
+            <span className="text-xs text-amber-400">{selectedIds.size} selected</span>
+          )}
         </div>
 
         <div className="space-y-2">
           {flights.map((flight) => (
             <div
               key={flight.id}
-              className="bg-board-row border border-board-border rounded px-4 py-3"
+              className={`bg-board-row border border-board-border rounded px-4 py-3 transition-colors ${
+                selectedIds.has(flight.id) ? 'border-amber-700/60 bg-amber-950/20' : ''
+              }`}
             >
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-4 min-w-0">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(flight.id)}
+                    onChange={() => toggleSelect(flight.id)}
+                    className="accent-amber-500 cursor-pointer shrink-0"
+                  />
                   <span className="font-bold text-amber-300 text-sm shrink-0">
                     {flight.flightNumber}
                   </span>
@@ -125,6 +194,16 @@ export default function AdminPage() {
           ))}
         </div>
       </div>
+
+      {someSelected && (
+        <BulkActionBar
+          selectedCount={selectedIds.size}
+          loading={bulkLoading}
+          onStatusChange={handleBulkStatusChange}
+          onDelete={handleBulkDelete}
+          onClear={() => setSelectedIds(new Set())}
+        />
+      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { FlightRow } from './FlightRow';
 import { LiveClock } from './LiveClock';
+import { AlertsBanner } from './AlertsBanner';
 import { useShallow } from 'zustand/react/shallow';
 import { useFlightsStore, selectFilteredFlights } from '@/store/flightsStore';
 import type { Flight, FlightStatus, Terminal } from '@/types';
@@ -34,6 +35,8 @@ export function FlightBoard({ initialFlights }: FlightBoardProps) {
         </div>
         <LiveClock />
       </header>
+
+      <AlertsBanner />
 
       {/* Filters */}
       <div className="bg-board-header border-b border-board-border px-6 py-3 flex flex-wrap gap-4 items-center">

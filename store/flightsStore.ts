@@ -14,8 +14,10 @@ interface FlightsStore {
   setFlights: (flights: Flight[]) => void;
   setFilter: <K extends keyof FiltersState>(key: K, value: FiltersState[K]) => void;
   updateFlight: (id: string, updates: Partial<Flight>) => void;
+  updateFlights: (ids: string[], updates: Partial<Flight>) => void;
   addFlight: (flight: Flight) => void;
   removeFlight: (id: string) => void;
+  removeFlights: (ids: string[]) => void;
   resetFlights: (flights: Flight[]) => void;
 }
 
@@ -40,10 +42,18 @@ export const useFlightsStore = create<FlightsStore>((set) => ({
       flights: state.flights.map((f) => (f.id === id ? { ...f, ...updates } : f)),
     })),
 
+  updateFlights: (ids, updates) =>
+    set((state) => ({
+      flights: state.flights.map((f) => (ids.includes(f.id) ? { ...f, ...updates } : f)),
+    })),
+
   addFlight: (flight) => set((state) => ({ flights: [...state.flights, flight] })),
 
   removeFlight: (id) =>
     set((state) => ({ flights: state.flights.filter((f) => f.id !== id) })),
+
+  removeFlights: (ids) =>
+    set((state) => ({ flights: state.flights.filter((f) => !ids.includes(f.id)) })),
 
   resetFlights: (flights) => set({ flights }),
 }));

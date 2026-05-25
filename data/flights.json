@@ -7,8 +7,7 @@
     "departureTime": "06:05",
     "terminal": "T1",
     "gate": "A1",
-    "status": "On Time",
-    "delayMinutes": 30
+    "status": "Departed"
   },
   {
     "id": "fl_r4nq",
@@ -100,7 +99,7 @@
     "departureTime": "10:55",
     "terminal": "T2",
     "gate": "B9",
-    "status": "Delayed",
+    "status": "Departed",
     "delayMinutes": 15
   },
   {
@@ -111,7 +110,7 @@
     "departureTime": "11:30",
     "terminal": "T1",
     "gate": "A15",
-    "status": "On Time"
+    "status": "Departed"
   },
   {
     "id": "fl_hx8v",
@@ -121,7 +120,7 @@
     "departureTime": "12:20",
     "terminal": "T1",
     "gate": "A6",
-    "status": "On Time"
+    "status": "Departed"
   },
   {
     "id": "fl_s3na",
@@ -131,7 +130,7 @@
     "departureTime": "13:05",
     "terminal": "T2",
     "gate": "B5",
-    "status": "Delayed",
+    "status": "Departed",
     "delayMinutes": 30
   },
   {
@@ -142,7 +141,7 @@
     "departureTime": "13:05",
     "terminal": "T1",
     "gate": "A9",
-    "status": "On Time"
+    "status": "Departed"
   },
   {
     "id": "fl_c2mw",
@@ -152,7 +151,7 @@
     "departureTime": "14:40",
     "terminal": "T2",
     "gate": "B20",
-    "status": "On Time"
+    "status": "Departed"
   },
   {
     "id": "fl_p5tf",
@@ -172,7 +171,7 @@
     "departureTime": "15:50",
     "terminal": "T1",
     "gate": "A18",
-    "status": "On Time"
+    "status": "Departed"
   },
   {
     "id": "fl_v4le",
@@ -182,7 +181,7 @@
     "departureTime": "16:25",
     "terminal": "T1",
     "gate": "A20",
-    "status": "On Time"
+    "status": "Departed"
   },
   {
     "id": "fl_n8qc",
@@ -192,7 +191,7 @@
     "departureTime": "17:10",
     "terminal": "T2",
     "gate": "B15",
-    "status": "On Time"
+    "status": "Departed"
   },
   {
     "id": "fl_g1rb",
@@ -204,5 +203,15 @@
     "gate": "A7",
     "status": "Delayed",
     "delayMinutes": 10
+  },
+  {
+    "flightNumber": "test",
+    "airline": "Wizz Air",
+    "destination": "warsaw",
+    "departureTime": "12:00",
+    "terminal": "T2",
+    "gate": "A1",
+    "status": "Cancelled",
+    "id": "1779723718858"
   }
 ]
